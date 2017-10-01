@@ -49,5 +49,8 @@ function getJackpot(){
 
 Due to a bug in my code, I did not actually withdraw any ether, but I did underflow my smart contract’s balance. I then transferred my balance (~1e77) to my wallet and withdrew 100 ether from the victim contract.
 
+```
+DCTF{f9c6470f8b5b0873b8b2a22bc2711ea973864b5faa5753ca88b79f8ba0b62c6a}
+```
 It turns out that this is the same exploit used during the DAO hack.
 
