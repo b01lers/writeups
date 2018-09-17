@@ -19,7 +19,7 @@ What this program does is print, "Do you gets it??", then it seems to read user 
 ## Goal
 Like most pwn challenges, the goal here is to get a shell and then print out a flag on a remote server. Using gdb, we can print out the list of defined functions
 ```
-gdb$ info functions 
+(gdb) info functions 
 All defined functions:
 
 Non-debugging symbols:
@@ -42,7 +42,7 @@ Non-debugging symbols:
 ```
 The line that immidiately sticks out is: `0x00000000004005b6  give_shell`. Our goal is to get a shell, and there is a function that claims to give us a shell. We can double check that this function does what it says it does by disassembing it:
 ```
-gdb$ disassemble give_shell 
+(gdb) disassemble give_shell 
 Dump of assembler code for function give_shell:
    0x00000000004005b6 <+0>:     push   rbp
    0x00000000004005b7 <+1>:     mov    rbp,rsp
@@ -55,7 +55,7 @@ End of assembler dump.
 ```
 If you do not understand this at first, it is okay. Essentially, this calls the `system` function with the argument 0x400684, which is a pointer to a memory location:
 ```
-gdb$ x/s 0x400684
+(gdb) x/s 0x400684
 0x400684:       "/bin/bash"
 ```
 So what is being executed by `give_shell()` is `system("/bin/bash")`. This will give us a shell.
@@ -63,7 +63,7 @@ So what is being executed by `give_shell()` is `system("/bin/bash")`. This will 
 ## Reverse engineering
 In gdb, you can print out the instructions that are executed as follows:
 ```
-gdb$ disassemble main
+(gdb) disassemble main
 Dump of assembler code for function main:
    0x00000000004005c7 <+0>:     push   rbp
    0x00000000004005c8 <+1>:     mov    rbp,rsp
@@ -111,7 +111,7 @@ That line in the assembly can then be interpreted as `edi = 0x40068e`.
 
 In gdb now, we can determine what that seemingly arbitrary hex number means.
 ```
-gdb$ x/s 0x40068e
+(gdb) x/s 0x40068e
 0x40068e:       "Do you gets it??"
 ```
 As it turns out, that number is pointing to the "Do you gets it??" string in memory, which is what we saw printed out when we ran the program.
