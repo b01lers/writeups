@@ -323,7 +323,7 @@ root
 ```
 What `(cat payload; cat)` does is simpily send your payload and the input that you type to get_it. Now you have a shell and can execute shell commands!
 
-## Aquiring the flag
+## Acquiring the flag
 To get the flag, you just need to run the exploit against the remote server like so:
 ```
 (cat payload; cat) | nc pwn.chal.csaw.io 9001
